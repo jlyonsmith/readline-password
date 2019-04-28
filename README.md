@@ -24,14 +24,13 @@ rl.password("Password: \u{1F511} ", (password) => {
 
 A call to `unref()` or something similar is needed to cause the Node.js event loop to exit, and is needed even with the built-in `readline` package.
 
-## Methods
+## Package: `readline-password`
 
-- Class: `Interface`
-  - Event: `close`
-  - Event: `SIGINT`
-  - Method: `close()`
-  - Method: `password(message, callback)`
-- Function: `createInterface(input, output)`
+  - [Class: `Interface`](#class-interface)
+  - [Event: `close`](#event-close)
+  - [Event: `SIGINT`](#event-sigint)
+  - [Method: `close()`](#method-close)
+  - [Method: `password(message, callback)`](#method-passwordmessage-callback)
 
 ### Class: `Interface`
 
