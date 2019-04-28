@@ -1,15 +1,22 @@
-# Readline for Passwords
+# Readline for Passwords <!-- omit in toc -->
 
-## Overview
+- [Package: `readline-password`](#package-readline-password)
+  - [Class: `Interface`](#class-interface)
+  - [Event: `close`](#event-close)
+  - [Event: `SIGINT`](#event-sigint)
+  - [Method: `close()`](#method-close)
+  - [Method: `password(message, callback)`](#method-passwordmessage-callback)
 
-This is a `readline` for passwords. It has a similar interface to the Node.js [readline](https://nodejs.org/api/readline.html).  Node's `readline` does not have any functionality to **not** echo the output of the `question()` method to the screen.  It also has lots of other functionality such as history and tab completion that is not relevant to entering passwords.
+## Package: `readline-password`
 
-Currently, this implementation does not echo the password characters to the screen as `*`.  This is intentional, and follows the behavior of `ssh` password entry.
+This is a `readline` for passwords. It has a similar interface to the Node.js [readline](https://nodejs.org/api/readline.html). Node's `readline` does not have any functionality to **not** echo the output of the `question()` method to the screen. It also has lots of other functionality such as history and tab completion that is not relevant to entering passwords.
+
+Currently, this implementation does not echo the password characters to the screen as `*`. This is intentional, and follows the behavior of `ssh` password entry.
 
 Here is an example of the usage:
 
 ```js
-import readlinePassword from "readline-password"
+import readlinePassword from "@johnls/readline-password"
 
 const rl = readlinePassword.createInstance(process.stdin, process.stdout)
 
@@ -23,14 +30,6 @@ rl.password("Password: \u{1F511} ", (password) => {
 ```
 
 A call to `unref()` or something similar is needed to cause the Node.js event loop to exit, and is needed even with the built-in `readline` package.
-
-## Package: `readline-password`
-
-  - [Class: `Interface`](#class-interface)
-  - [Event: `close`](#event-close)
-  - [Event: `SIGINT`](#event-sigint)
-  - [Method: `close()`](#method-close)
-  - [Method: `password(message, callback)`](#method-passwordmessage-callback)
 
 ### Class: `Interface`
 
@@ -54,6 +53,6 @@ Closes the `Interface` and relinquishes control over the `input` and `output` st
 
 ### Method: `password(message, callback)`
 
-Displays the message and begins receiving a password.  When the user hits **Enter** or **Return** the `callback()` function is called passing the password string as the first argument.
+Displays the message and begins receiving a password. When the user hits **Enter** or **Return** the `callback()` function is called. This method follows the standard node convention of `(err, value) => ...` where value is the entered password string. `err` will always be `null`. This allows the call to be wrapped with `util.promisify()`.
 
 The only editing that is supported is **Backspace** to delete the last character entered, and **Control+V** or **Command+V** to paste a password.

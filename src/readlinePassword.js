@@ -1,5 +1,6 @@
 import readline from "readline"
 import EventEmitter from "events"
+import util from "util"
 
 export const readlinePassword = {
   Instance: class extends EventEmitter {
@@ -49,10 +50,13 @@ export const readlinePassword = {
     finishLine() {
       this.output.write("\n")
 
-      const callback = this.passwordCallback
+      const callback = this.callback
 
-      this.passwordCallback = null
-      callback(this.line)
+      this.callback = null
+
+      if (callback) {
+        callback(null, this.line)
+      }
     }
 
     onKeypress(s, key) {
@@ -87,9 +91,18 @@ export const readlinePassword = {
     }
 
     password(options, callback) {
+      if (options && typeof options === "string") {
+        options = { prompt: options }
+      }
+
       this.line = ""
-      this.passwordCallback = callback
-      this.output.write(options)
+      this.echo = !!options.echo
+      this.output.write(options.prompt)
+      this.callback = callback
+    }
+
+    passwordAsync(options) {
+      return util.promisify(this.password.bind(this))(options)
     }
   },
   createInstance: (input, output) =>
