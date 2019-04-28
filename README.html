@@ -29,13 +29,14 @@
 <li><a href="#event-close">Event: <code>close</code></a></li>
 <li><a href="#event-sigint">Event: <code>SIGINT</code></a></li>
 <li><a href="#method-close">Method: <code>close()</code></a></li>
-<li><a href="#method-passwordmessage-callback">Method: <code>password(message, callback)</code></a></li>
+<li><a href="#method-passwordoptions-callback">Method: <code>password(options, callback)</code></a></li>
+<li><a href="#method-passwordasyncoptions">Method: <code>passwordAsync(options)</code></a></li>
 </ul>
 </li>
 </ul>
 <h2 id="package-readline-password">Package: <code>readline-password</code></h2>
 <p>This is a <code>readline</code> for passwords. It has a similar interface to the Node.js <a href="https://nodejs.org/api/readline.html">readline</a>. Node's <code>readline</code> does not have any functionality to <strong>not</strong> echo the output of the <code>question()</code> method to the screen. It also has lots of other functionality such as history and tab completion that is not relevant to entering passwords.</p>
-<p>Currently, this implementation does not echo the password characters to the screen as <code>*</code>. This is intentional, and follows the behavior of <code>ssh</code> password entry.</p>
+<p>This implementation also provides for optionally echoing the password characters to the screen as <code>*</code>.</p>
 <p>Here is an example of the usage:</p>
 <pre><code class="language-js"><div><span class="hljs-keyword">import</span> readlinePassword <span class="hljs-keyword">from</span> <span class="hljs-string">"@johnls/readline-password"</span>
 
@@ -48,6 +49,20 @@ rl.password(<span class="hljs-string">"Password: \u{1F511} "</span>, (password) 
   rl.close()
   process.stdin.unref() <span class="hljs-comment">// Do this only when we are all done with input</span>
 })
+</div></code></pre>
+<p>You can also use promises:</p>
+<pre><code class="language-js"><div><span class="hljs-keyword">import</span> readlinePassword <span class="hljs-keyword">from</span> <span class="hljs-string">"@johnls/readline-password"</span>
+
+<span class="hljs-keyword">const</span> rl = readlinePassword.createInstance(process.stdin, process.stdout)
+
+rl.on(<span class="hljs-string">"SIGINT"</span>, () =&gt; process.exit(<span class="hljs-number">1</span>))
+;<span class="hljs-function">(<span class="hljs-params"><span class="hljs-keyword">async</span> (</span>) =&gt;</span> {
+  <span class="hljs-keyword">const</span> password = <span class="hljs-keyword">await</span> rl.passwordAsync(<span class="hljs-string">"Password: \u{1F511} "</span>)
+
+  <span class="hljs-built_in">console</span>.log(password)
+  rl.close()
+  process.stdin.unref() <span class="hljs-comment">// See above</span>
+})()
 </div></code></pre>
 <p>A call to <code>unref()</code> or something similar is needed to cause the Node.js event loop to exit, and is needed even with the built-in <code>readline</code> package.</p>
 <h3 id="class-interface">Class: <code>Interface</code></h3>
@@ -64,9 +79,16 @@ rl.password(<span class="hljs-string">"Password: \u{1F511} "</span>, (password) 
 </ul>
 <h3 id="method-close">Method: <code>close()</code></h3>
 <p>Closes the <code>Interface</code> and relinquishes control over the <code>input</code> and <code>output</code> streams.</p>
-<h3 id="method-passwordmessage-callback">Method: <code>password(message, callback)</code></h3>
-<p>Displays the message and begins receiving a password. When the user hits <strong>Enter</strong> or <strong>Return</strong> the <code>callback()</code> function is called. This method follows the standard node convention of <code>(err, value) =&gt; ...</code> where value is the entered password string. <code>err</code> will always be <code>null</code>. This allows the call to be wrapped with <code>util.promisify()</code>.</p>
+<h3 id="method-passwordoptions-callback">Method: <code>password(options, callback)</code></h3>
+<p>If <code>options</code> is a string, displays it as the text prompt and begins receiving a password. When the user hits <strong>Enter</strong> or <strong>Return</strong> the <code>callback()</code> function is called. This method follows the standard node convention of <code>(err, value) =&gt; ...</code> where value is the entered password string. <code>err</code> will always be <code>null</code>. This allows the call to be wrapped with <code>util.promisify()</code>.</p>
+<p>If <code>options</code> is an object it can contain:</p>
+<ul>
+<li><code>prompt</code>. String to display for the prompt</li>
+<li><code>echo</code>. Whether to echo a <code>*</code> everytime an character is entered</li>
+</ul>
 <p>The only editing that is supported is <strong>Backspace</strong> to delete the last character entered, and <strong>Control+V</strong> or <strong>Command+V</strong> to paste a password.</p>
+<h3 id="method-passwordasyncoptions">Method: <code>passwordAsync(options)</code></h3>
+<p>Like <code>password()</code> but returns a <code>Promise</code>.</p>
 
     </body>
     </html>

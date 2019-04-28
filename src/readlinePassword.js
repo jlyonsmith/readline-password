@@ -45,6 +45,12 @@ export const readlinePassword = {
       if (this.line.length > 0) {
         this.line = this.line.slice(0, this.line.length - 1)
       }
+
+      if (this.echo) {
+        readline.moveCursor(this.output, -1, 0)
+        this.output.write(" ")
+        readline.moveCursor(this.output, -1, 0)
+      }
     }
 
     finishLine() {
@@ -85,6 +91,9 @@ export const readlinePassword = {
           default:
             if (typeof s === "string" && s) {
               this.line += s
+              if (this.echo) {
+                this.output.write("*")
+              }
             }
         }
       }
